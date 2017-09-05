@@ -58,3 +58,18 @@ let ``When csv contains invalid schema, a result failure returned`` () =
     let resultMap = Translate<FakeMapType>([|"city,country2";"oslo,norway"|]);    
     let expected = Failure <| sprintf "schema '%s' is not valid for %s" "city,country2" typeof<FakeMapType>.Name
     Assert.Equal(expected, resultMap)
+
+[<Fact>]
+let ``When csv contains no schema and TranslateHard is called, empty array is returned``() =
+    let resultMap = TranslateHard<FakeMapType>([||]);    
+    Assert.Empty(resultMap)
+
+[<Fact>]
+let ``When csv contains no data and TranslateHard is called, empty array is returned``() =
+    let resultMap = TranslateHard<FakeMapType>([|"city,country"|]);    
+    Assert.Empty(resultMap)
+
+[<Fact>]
+let ``When csv contains invalid schema and TranslateHard is called, empty array is returned``() =
+    let resultMap = TranslateHard<FakeMapType>([|"city,country2";"oslo,norway"|]);    
+    Assert.Empty(resultMap)

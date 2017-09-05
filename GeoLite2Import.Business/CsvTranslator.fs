@@ -17,3 +17,8 @@ let Translate<'a when 'a: (new: unit -> 'a)>(csvLines: string[]) =
         let schema = csvLines.[0];
         if IsSchemaValid<'a>(schema) then Success <| (csvLines |> Seq.skip 1 |> Seq.map Parse<'a> |> Seq.toArray)
         else Failure <| sprintf "schema '%s' is not valid for %s" schema typeof<'a>.Name
+
+let TranslateHard<'a when 'a: (new: unit -> 'a)>(csvLines: string[]): 'a[] =
+    match Translate csvLines with
+    | Success s -> s
+    | Failure f -> [||]
