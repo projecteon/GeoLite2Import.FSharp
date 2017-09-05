@@ -9,6 +9,7 @@
   <ItemGroup>
     <Compile Include="CsvSchemaValidatorTests.fs" />
     <Compile Include="CsvAttributeStringParserTests.fs" />
+    <Compile Include="CsvTranslatorTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
