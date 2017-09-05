@@ -17,13 +17,16 @@ let MapCsvColumnAttribute(propertyInfo: PropertyInfo) =
         Some({Property = propertyInfo; Attribute = attributes.Value})
     else None
 
-let GetCsvColumnAttributeSchema<'a>() =
+let GetSortedCsvColumnAttribute<'a>() =
     let bindingFlags = 
         BindingFlags.Public   ||| 
         BindingFlags.Instance ||| 
         BindingFlags.GetProperty
     let properties = typeof<'a>.GetProperties(bindingFlags)
-    let csvColumnProperties = properties  |> Seq.choose MapCsvColumnAttribute |> Seq.sortBy (fun f -> f.Attribute.ColumnIndex)
+    properties  |> Seq.choose MapCsvColumnAttribute |> Seq.sortBy (fun f -> f.Attribute.ColumnIndex)
+
+let GetCsvColumnAttributeSchema<'a>() =    
+    let csvColumnProperties = GetSortedCsvColumnAttribute<'a>()
     let csvColumnPropertyNames = csvColumnProperties |> Seq.map (fun f -> f.Property.Name)
     csvColumnPropertyNames |> Seq.reduce (fun x y -> x + "," + y)
 
