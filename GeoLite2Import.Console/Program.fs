@@ -3,6 +3,7 @@
 open System
 open System.IO
 open System.Net
+open System.Numerics
 open GeoLite2Import.Business.CsvTranslator
 open GeoLite2Import.Business.Models
 
@@ -11,6 +12,19 @@ let Ipv4CityLocationsImportFilePath = @"geolite2\GeoLite2-City-Locations-en.csv"
 let Ipv4CountryBlocksImportFilePath = @"geolite2\GeoLite2-Country-Blocks-IPv4-example.csv";
 let Ipv4CountyLocationsImportFilePath = @"geolite2\GeoLite2-Country-Locations-en-example.csv";
 let WorldCitiesPopImportFilePath = @"geolite2\worldcitiespop-example.csv";
+
+let translatePart(ipPart: string) =
+    ipPart
+    |> int
+    |> sprintf "%03i"
+    
+
+let translate(ipAddress: IPAddress) =
+    ipAddress.ToString().Split('.')
+    |> Seq.map translatePart
+    |> Seq.reduce (fun x y -> x + y)
+    |> BigInteger.Parse
+
 
 let Import<'a when 'a: (new: unit -> 'a)>(filePath: string) =
     let csvLines = File.ReadAllLines(filePath)
@@ -33,7 +47,7 @@ let LogImport<'a when 'a: (new: unit -> 'a)>(filePath: string) =
 
 let LogIp(ipvBlock: GeoLite2CityBlock) =
     let ipnetwork = IPNetwork.Parse(ipvBlock.network)
-    printfn "%s, %A, %A" ipvBlock.network ipnetwork.FirstUsable ipnetwork.LastUsable
+    printfn "%s, %A - %A, %A - %A" ipvBlock.network ipnetwork.FirstUsable ipnetwork.LastUsable (translate ipnetwork.FirstUsable) (translate ipnetwork.LastUsable)
 
 let LogIpRanges() =
     let result = Import<GeoLite2CityBlock>(Ipv4CityBlocksImportFilePath)
