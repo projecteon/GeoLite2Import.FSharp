@@ -2,10 +2,11 @@
 
 open System
 open System.IO
+open System.Net
 open GeoLite2Import.Business.CsvTranslator
 open GeoLite2Import.Business.Models
 
-let Ipv4BCityBlocksImportFilePath = @"geolite2\GeoLite2-City-Blocks-IPv4-example.csv";
+let Ipv4CityBlocksImportFilePath = @"geolite2\GeoLite2-City-Blocks-IPv4-example.csv";
 let Ipv4CityLocationsImportFilePath = @"geolite2\GeoLite2-City-Locations-en.csv";
 let Ipv4CountryBlocksImportFilePath = @"geolite2\GeoLite2-Country-Blocks-IPv4-example.csv";
 let Ipv4CountyLocationsImportFilePath = @"geolite2\GeoLite2-Country-Locations-en-example.csv";
@@ -17,7 +18,6 @@ let Import<'a when 'a: (new: unit -> 'a)>(filePath: string) =
         printfn "Reading csv file failed, no lines read!"
         [||]
     else
-        csvLines |> Seq.map (fun f -> printf "%s" f) |> ignore
         match Translate<'a>(csvLines) with
         | Success s -> s
         | Failure f -> 
@@ -26,10 +26,24 @@ let Import<'a when 'a: (new: unit -> 'a)>(filePath: string) =
     
 let LogImport<'a when 'a: (new: unit -> 'a)>(filePath: string) =
     let result = Import<'a>(filePath)
-    result |> Seq.map (fun f -> printf "%A" f)
+    printfn "map result %i" result.Length
+    result 
+    |> Array.iteri (fun i f -> printfn "line: %i - %A" i f) 
+    |> ignore
+
+let LogIp(ipvBlock: GeoLite2CityBlock) =
+    let ipnetwork = IPNetwork.Parse(ipvBlock.network)
+    printfn "%s, %A, %A" ipvBlock.network ipnetwork.FirstUsable ipnetwork.LastUsable
+
+let LogIpRanges() =
+    let result = Import<GeoLite2CityBlock>(Ipv4CityBlocksImportFilePath)
+    result 
+    |> Array.iter (fun f -> LogIp f)    
+    |> ignore
 
 [<EntryPoint>]
 let main argv =
     printfn "GeoLite2Import start"
-    LogImport<GeoLite2CityBlock>(Ipv4BCityBlocksImportFilePath) |> ignore
+    // LogImport<GeoLite2CityBlock>(Ipv4CityBlocksImportFilePath)
+    LogIpRanges()
     0 // return an integer exit code

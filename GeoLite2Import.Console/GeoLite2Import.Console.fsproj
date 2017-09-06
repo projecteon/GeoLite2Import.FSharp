@@ -10,6 +10,10 @@
   </ItemGroup>
   
   <ItemGroup>
+    <PackageReference Include="IPNetwork2" Version="2.1.1" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <ProjectReference Include="..\GeoLite2Import.Business\GeoLite2Import.Business.fsproj" />
   </ItemGroup>
 </Project>

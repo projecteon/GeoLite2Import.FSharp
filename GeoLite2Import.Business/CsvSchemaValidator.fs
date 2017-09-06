@@ -34,4 +34,5 @@ let GetCsvColumnAttributeSchema<'a>() =
         csvColumnPropertyNames |> Seq.reduce (fun x y -> x + "," + y)
 
 let IsSchemaValid<'a>(schema: string) =
-    schema.Equals(GetCsvColumnAttributeSchema<'a>())
+    let columnSchema = GetCsvColumnAttributeSchema<'a>()
+    schema.Equals(columnSchema) && columnSchema.Length > 0
