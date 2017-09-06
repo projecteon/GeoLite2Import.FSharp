@@ -28,7 +28,10 @@ let GetSortedCsvColumnAttribute<'a>() =
 let GetCsvColumnAttributeSchema<'a>() =    
     let csvColumnProperties = GetSortedCsvColumnAttribute<'a>()
     let csvColumnPropertyNames = csvColumnProperties |> Seq.map (fun f -> f.Property.Name)
-    csvColumnPropertyNames |> Seq.reduce (fun x y -> x + "," + y)
+    if Seq.isEmpty csvColumnPropertyNames then
+        ""
+    else
+        csvColumnPropertyNames |> Seq.reduce (fun x y -> x + "," + y)
 
 let IsSchemaValid<'a>(schema: string) =
     schema.Equals(GetCsvColumnAttributeSchema<'a>())
